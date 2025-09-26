@@ -6,33 +6,113 @@
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
-      background: #f5f5f5;
+      background: #BEBEBE;
       margin: 0;
       padding: 0;
+      font-size: 18px;
     }
+
     header {
-      background: #4a90e2;
+      position: relative;
+      background: #003060;
       color: white;
-      text-align: center;
-      padding: 30px 0;
+      display: flex;
+      justify-content: center;  /* 水平置中整個 header */
+      padding: 40px 20px;
+      gap: 40px;
     }
+
+    /* 照片固定大小 */
+    header img {
+      width: 200px;
+      height: 200px;
+      border-radius: 0;
+      border: 4px solid white;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* 文字區固定寬度 */
+    header .info {
+      width: 550px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative; /* 名言絕對定位的父元素 */
+    }
+
     header h1 {
-      margin: 0;
+      margin: 0 0 10px;
     }
+
+    /* 名言絕對定位，固定位置不晃動 */
+    .quote {
+      font-size: 18px;
+      font-style: italic;
+      position: absolute;
+      bottom: -30px; /* 名言置於名字下方 */
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      transition: opacity 1s;
+      text-align: left;
+      white-space: nowrap; /* 防換行影響布局 */
+    }
+    .quote.show {
+      opacity: 1;
+    }
+
     main {
       max-width: 800px;
-      margin: 20px auto;
+      margin: 60px auto 30px auto;
       background: white;
-      padding: 20px 30px;
+      padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #4a90e2;
-    }
-    p {
       line-height: 1.6;
     }
+
+    h2 {
+      color: #4a90e2;
+      margin-top: 20px;
+    }
+
+    .highlight {
+      font-style: italic;
+      text-align: center;
+      color: #008080;
+      font-size: 20px;
+      margin: 20px 0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .email {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .email a {
+      color: #003060;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .email a:hover {
+      color: #008080;
+      text-decoration: underline;
+    }
+
     footer {
       text-align: center;
       padding: 15px;
@@ -43,32 +123,61 @@
 </head>
 <body>
   <header>
-    <h1>哈囉！我是張肇廷</h1>
-    <p>歡迎來到我的自我介紹網頁</p>
+    <!-- 照片 -->
+    <img src="IMG_1938.JPG" alt="我的照片">
+
+    <!-- 文字區 -->
+    <div class="info">
+      <h1>Hello! My name is 張肇廷</h1>
+      <p>Welcome to my self-introdution web page!</p>
+      <p id="quote" class="quote">「Don't let the pass steal your present!」</p>
+    </div>
   </header>
 
   <main>
-    <h2>關於我</h2>
-    <p>大家好，我是肇廷，目前正在學習程式設計，特別是使用 Xcode 進行 C 和 Swift 開發。我也對網頁設計很有興趣，這是我嘗試寫的第一個 HTML 網頁。</p>
+    <h2>About Me</h2>
+    <p>大家好，我是張肇廷</p>
+    <p>目前就讀於國立台灣師範大學：科技應用與人力資源發展學系大二</p>
 
     <h2>我的興趣</h2>
     <ul>
-      <li>程式設計與解題</li>
-      <li>介面設計 / UX</li>
-      <li>打籃球、運動</li>
-      <li>閱讀與學習新技術</li>
+      <li>健身、打羽球</li>
+      <li>聽英文流行音樂</li>
+      <li>看電影看動漫</li>
+      <li>學習一些投資理財</li>
     </ul>
 
-    <h2>我的目標</h2>
-    <p>希望能結合前端技術與 App 開發，打造出既實用又好看的作品。同時我也想持續累積作品，建立一個完整的個人網站與作品集。</p>
+    <p class="highlight">Wanna know more about me?</p>
 
-    <h2>聯絡我</h2>
-    <p>Email：<a href="mailto:youremail@example.com">youremail@example.com</a></p>
+    <p class="email">📧 Email:
+      <a href="mailto:chaotingchong@gmail.com">chaotingchong@gmail.com</a>
+    </p>
   </main>
 
   <footer>
     © 2025 張肇廷 | 用 HTML 製作
   </footer>
+
+  <script>
+    // 名言動畫
+    const quotes = [
+      "「Don't let the pass steal your present!」",
+      "「If you regret something once, don't let it happen AGAIN! 」"
+    ];
+    let index = 0;
+    const quoteEl = document.getElementById("quote");
+
+    function showQuote() {
+      quoteEl.classList.remove("show");
+      setTimeout(() => {
+        quoteEl.textContent = quotes[index];
+        quoteEl.classList.add("show");
+        index = (index + 1) % quotes.length;
+      }, 1000);
+    }
+
+    setInterval(showQuote, 4000);
+    quoteEl.classList.add("show");
+  </script>
 </body>
 </html>
-
