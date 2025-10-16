@@ -1,15 +1,16 @@
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Link } from 'expo-router';
 import FormDashboard from './FormDashboard';
 import TaipeiDashboard from "./TaipeiDashboard";
 
-// === Inline helper: build a mini dashboard by index ===
+// === Inline helper: build a mini dashboard by index (e.g., index=traffic) ===
 function DashboardIndexViewer({ baseUrl, city, dashIndex, limit = 4 }:{ baseUrl: string; city: string; dashIndex: string; limit?: number }) {
   const [componentIds, setComponentIds] = React.useState<number[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -41,9 +42,7 @@ function DashboardIndexViewer({ baseUrl, city, dashIndex, limit = 4 }:{ baseUrl:
 
   return (
     <div style={{ marginTop: 16 }}>
-      <div style={{ fontWeight: 700, marginBottom: 8, color: '#111827' }}>
-        Dashboard Index Viewer — city: {city}, index: {dashIndex}
-      </div>
+      <div style={{ fontWeight: 700, marginBottom: 8, color: '#111827' }}>Dashboard Index Viewer — city: {city}, index: {dashIndex}</div>
       {loading && <div style={{ opacity: 0.7, color: '#111827' }}>Loading…</div>}
       {error && <div style={{ color: '#f87171' }}>Error: {error}</div>}
       {!loading && !error && componentIds.length === 0 && (
@@ -62,11 +61,13 @@ function DashboardIndexViewer({ baseUrl, city, dashIndex, limit = 4 }:{ baseUrl:
 }
 
 export default function HomeScreen() {
+  // === Demo form state ===
   const [baseUrl, setBaseUrl] = useState<string>('http://localhost:4000');
   const [service, setService] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [submittedUrl, setSubmittedUrl] = useState<string>(baseUrl);
 
+  // === Dashboard builder form state ===
   const [dashCity, setDashCity] = useState<string>('taipei');
   const [dashIndex, setDashIndex] = useState<string>('traffic');
   const [dashLimit, setDashLimit] = useState<number>(4);
@@ -106,9 +107,20 @@ export default function HomeScreen() {
           Below is a live example of fetching data from Taipei City Dashboard API:
         </ThemedText>
 
+        {/* 白底容器（表單 + Dashboard） */}
         <ThemedView style={{ ...styles.whiteCard, backgroundColor: '#B3DDF2', borderColor: '#f87171' }}>
-          {/* Form request */}
+
+          {/* === HTML/JS Form Request 教學區 === */}
           <div style={{ display: 'grid', gap: 12 }}>
+            <div>
+              <h3 style={{ marginBottom: 6, fontWeight: 600, fontSize: 16, color: '#111827' }}>Form Request (HTML + JS)</h3>
+              <p style={{ margin: 0, fontSize: 14, opacity: 0.8, color: '#111827' }}>
+                1) 設定 <code>Base URL</code> →
+                2) 選擇範例 API →
+                3) Submit 後傳給 <code>TaipeiDashboard</code> 渲染結果。
+              </p>
+            </div>
+
             <form onSubmit={handleSubmit} style={{
               display: 'grid',
               gap: 10,
@@ -124,11 +136,11 @@ export default function HomeScreen() {
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
                   placeholder="http://localhost:4000/api/taipei"
-                  style={{ ...inputStyle, backgroundColor: '#DFF4FC', color: '#111827', border: '1px solid #f87171' }}
+                  style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}
                 />
               </label>
 
-              {/* Quick select */}
+              {/* === 快速選擇範例 API === */}
               <div style={{ display: 'grid', gap: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>快速選擇 API 範例</span>
                 <select
@@ -140,7 +152,7 @@ export default function HomeScreen() {
                     else if (value === "v1-component-20") { setService("api/v1/component/20/chart"); setQuery("city=taipei"); }
                     else { setService(""); setQuery(""); }
                   }}
-                  style={{ ...inputStyle, minWidth: 260, backgroundColor: '#DFF4FC', color: '#111827', border: '1px solid #f87171' }}
+                  style={{ ...inputStyle, minWidth: 260, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}
                 >
                   <option value="">— 請選擇一個範例 —</option>
                   <option value="v1-dashboards-city">Dashboards 清單（/api/v1/dashboard?city=taipei）</option>
@@ -150,8 +162,41 @@ export default function HomeScreen() {
                 </select>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-                <div style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 12, opacity: 0.8, color: '#111827' }}>
+              <label style={{ display: 'grid', gap: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Service path（可自行輸入）</span>
+                <input
+                  type="text"
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  placeholder="api/v1/dashboard 或 api/v1/component/57/chart"
+                  style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}
+                />
+              </label>
+
+              <label style={{ display: 'grid', gap: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>Query string（可自行輸入）</span>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="city=taipei"
+                  style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}
+                />
+              </label>
+
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                flexWrap: 'wrap'
+              }}>
+                <div style={{
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                  fontSize: 12,
+                  opacity: 0.8,
+                  color: '#111827'
+                }}>
                   Preview:&nbsp;<code style={{ color: '#f87171' }}>{previewUrl}</code>
                 </div>
                 <button type="submit" style={{ ...buttonStyle, backgroundColor: '#f87171', color: '#111827', borderColor: '#fff' }}>Submit & Load</button>
@@ -159,15 +204,18 @@ export default function HomeScreen() {
             </form>
           </div>
 
-          {/* Dashboard Builder */}
-          <div style={{ marginTop: 16, padding: 12, border: '1px solid #f87171', borderRadius: 12, background: '#DFF4FC' }}>
+          {/* Dashboard Index → Components */}
+          <div style={{ marginTop: 16, padding: 12, border: '1px solid #f87171', borderRadius: 12, background: '#B3DDF2' }}>
             <h4 style={{ margin: 0, color: '#111827' }}>Dashboard Builder（index → components）</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(160px, 1fr))', gap: 12, marginTop: 12 }}>
-              <select value={dashCity} onChange={(e) => setDashCity(e.target.value)} style={{ ...inputStyle, backgroundColor: '#DFF4FC', color: '#111827', border: '1px solid #f87171' }}>
+            <p style={{ margin: '6px 0 12px', opacity: 0.8, fontSize: 14, color: '#111827' }}>
+              選擇 city 與 index，按 <b>Build</b> 後會抓取該 dashboard，並依序載入其 components 的資料。
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(160px, 1fr))', gap: 12 }}>
+              <select value={dashCity} onChange={(e) => setDashCity(e.target.value)} style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}>
                 <option value="taipei">taipei</option>
                 <option value="metrotaipei">metrotaipei</option>
               </select>
-              <select value={dashIndex} onChange={(e) => setDashIndex(e.target.value)} style={{ ...inputStyle, backgroundColor: '#DFF4FC', color: '#111827', border: '1px solid #f87171' }}>
+              <select value={dashIndex} onChange={(e) => setDashIndex(e.target.value)} style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}>
                 <option value="traffic">traffic</option>
                 <option value="metro">metro</option>
                 <option value="youbike">youbike</option>
@@ -178,13 +226,15 @@ export default function HomeScreen() {
               </select>
               <input type="number" min={1} max={12} value={dashLimit}
                 onChange={(e) => setDashLimit(Math.max(1, Math.min(12, Number(e.target.value) || 1)))}
-                style={{ ...inputStyle, backgroundColor: '#DFF4FC', color: '#111827', border: '1px solid #f87171' }}
+                style={{ ...inputStyle, backgroundColor: '#DFF4FC', border: '1px solid #f87171', color: '#111827' }}
               />
             </div>
             <div style={{ marginTop: 10 }}>
-              <button type="button" style={{ ...buttonStyle, backgroundColor: '#f87171', color: '#111827', borderColor: '#fff' }} onClick={() => setDashBuildKey(k => k + 1)}>Build</button>
+              <button type="button" style={{ ...buttonStyle, backgroundColor: '#f87171', color: '#111827', borderColor: '#fff' }} onClick={() => setDashBuildKey((k) => k + 1)}>Build</button>
             </div>
-            {dashBuildKey > 0 && <DashboardIndexViewer key={`${dashCity}-${dashIndex}-${dashBuildKey}`} baseUrl={baseUrl} city={dashCity} dashIndex={dashIndex} limit={dashLimit} />}
+            {dashBuildKey > 0 && (
+              <DashboardIndexViewer key={`${dashCity}-${dashIndex}-${dashBuildKey}`} baseUrl={baseUrl} city={dashCity} dashIndex={dashIndex} limit={dashLimit} />
+            )}
           </div>
 
           {/* TaipeiDashboard + FormDashboard */}
@@ -192,9 +242,56 @@ export default function HomeScreen() {
             <TaipeiDashboard apiUrl={submittedUrl} />
           </div>
           <div style={{ marginTop: 16 }}>
-            <FormDashboard defaultUrl={submittedUrl} defaultMethod="GET" hint="可改 method / Headers / Body 觀察不同回應" />
+            <FormDashboard
+              defaultUrl={submittedUrl}
+              defaultMethod="GET"
+              hint="這是可選的 Hint：同學可以改 method、Headers 和 Body，觀察 API 的不同回應。"
+            />
           </div>
         </ThemedView>
+      </ThemedView>
+
+      {/* Step 1 / Step 2 / Step 3 教學 */}
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText>
+          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
+          Press{' '}
+          <ThemedText type="defaultSemiBold">
+            {Platform.select({ ios: 'cmd + d', android: 'cmd + m', web: 'F12' })}
+          </ThemedText>{' '}
+          to open developer tools.
+        </ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.stepContainer}>
+        <Link href="/modal">
+          <Link.Trigger>
+            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
+          </Link.Trigger>
+          <Link.Preview />
+          <Link.Menu>
+            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
+            <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => alert('Share pressed')} />
+            <Link.Menu title="More" icon="ellipsis">
+              <Link.MenuAction title="Delete" icon="trash" destructive onPress={() => alert('Delete pressed')} />
+            </Link.Menu>
+          </Link.Menu>
+        </Link>
+        <ThemedText>
+          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+        </ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText>
+          {`When you're ready, run `}
+          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
+          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+        </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
