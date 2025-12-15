@@ -16,4 +16,4 @@ HW3[react專案整合](https://github.com/chaotingchong-crypto/web2-)
 張肇廷 41371212H 黃昱瑋 41371121H   
 [部署網站]()  
 [youtube](https://youtu.be/jpiZwgpBnNI)  
-[github repo]()  
+[github repo](https://github.com/chaotingchong-crypto/workoutlab)  
