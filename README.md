@@ -11,3 +11,9 @@ Altest.tsx:[改動UI 增加上傳檔案](https://github.com/chaotingchong-crypto
   
 HW3[react專案整合](https://github.com/chaotingchong-crypto/web2-)  
 影片在此repo內有連結
+
+健身訓練指南 workoutlab  
+張肇廷 41371212H 黃昱瑋 41371121H   
+[部署網站]()  
+[youtube](https://youtu.be/jpiZwgpBnNI)  
+[github repo]()  
